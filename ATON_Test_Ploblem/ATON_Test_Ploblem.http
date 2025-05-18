@@ -13,3 +13,19 @@ Accept: application/json
     "birthday": "2004-10-18"
 }
 ###
+
+PUT https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "DianaSlanova",
+    "gender": 0,
+    "birthday": "2003-07-27"
+}
+###
+
+Get https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555
+Content-Type: application/json
+
+###

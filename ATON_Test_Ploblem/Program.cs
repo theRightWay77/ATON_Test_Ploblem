@@ -12,6 +12,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.Services.GetRequiredService<UserRepository>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

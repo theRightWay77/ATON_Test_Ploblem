@@ -5,6 +5,7 @@ using ATON_Test_Ploblem.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Data;
 
 namespace ATON_Test_Ploblem.Controllers
 {
@@ -44,6 +45,9 @@ namespace ATON_Test_Ploblem.Controllers
 
             if (!Validation.IsValidGender(userDto.Gender))
                 return BadRequest("Неверно указан пол.");
+
+            if (userDto.Admin && !currentUser.Admin)
+                return Forbid("Назначить роль администратора может только другой администратор.");
 
             var user = new User
             {
@@ -99,6 +103,44 @@ namespace ATON_Test_Ploblem.Controllers
                 ModifiedOn = user.ModifiedOn,
                 ModifiedBy = user.ModifiedBy,
             });
+        }
+
+        [HttpPut("{userId:guid}")]
+        public ActionResult<UpdateUserDTO> UpdateUser(Guid userId, [FromBody] UpdateUserDTO userDto)
+        {
+            var currentUser = _userRepository.GetByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            var user = _userRepository.GetById(userId);
+
+            if (!currentUser.Admin)
+            {
+                if (currentUser.Guid != userId)
+                    return Forbid("Нет прав для совершения операции.");
+            }
+
+            if (user?.RevokedOn != null)
+                return BadRequest("Вы тыпаетесь изменить данные удаленного пользователя.");
+
+            if (!Validation.IsValidName(userDto.Name))
+                return BadRequest("Имя пользователя должно содержать только латинские и русские буквы.");
+
+            if (!Validation.IsValidGender(userDto.Gender))
+                return BadRequest("Неверно указан пол.");
+
+            user.Name = userDto.Name;
+            user.Gender = userDto.Gender;
+            user.Birthday = userDto.Birthday;
+            user.ModifiedOn = DateTime.Now;
+            user.ModifiedBy = currentUser.Login;
+
+            _userRepository.Update(user);
+
+            var updatedUser = GetById(userId);
+
+            return Ok(updatedUser);
         }
     }
 }

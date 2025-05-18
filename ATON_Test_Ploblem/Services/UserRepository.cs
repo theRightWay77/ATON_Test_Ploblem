@@ -10,7 +10,7 @@ namespace ATON_Test_Ploblem.Services
         {
             var Admin = new User
             {
-                Guid = Guid.NewGuid(),
+                Guid = Guid.Parse("11111111-2222-3333-4444-555555555555"),
                 Login = "Admin",
                 Password = "password",
                 Name = "Admin",
@@ -38,6 +38,17 @@ namespace ATON_Test_Ploblem.Services
         public void Add(User user)
         {
             Users.Add(user);
+        }
+
+        public void Update(User user)
+        {
+            var oldUser = GetByLogin(user.Login);
+
+            if (oldUser is not null)
+            {
+                var indexOfOldUser = Users.IndexOf(oldUser);
+                Users[indexOfOldUser] = user;
+            }
         }
     }
 }
