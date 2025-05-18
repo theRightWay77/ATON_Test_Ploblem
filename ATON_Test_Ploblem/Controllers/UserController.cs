@@ -209,5 +209,21 @@ namespace ATON_Test_Ploblem.Controllers
 
             return Ok(updatedUser);
         }
+
+        [HttpGet("getAll")]
+        public ActionResult<List<GetUserDTO>> GetAll()
+        {
+            var currentUser = _userRepository.GetByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            if (!currentUser.Admin)
+                return Forbid("Действие доступно только алминистраторам.");
+
+            var users = MapToGetUserDTO.Map(_userRepository.GetAllActive());
+
+            return Ok(users);
+        }
     }
 }

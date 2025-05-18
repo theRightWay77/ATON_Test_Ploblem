@@ -3,7 +3,7 @@
 POST https://localhost:7108/api/User
 Content-Type: application/json
 Accept: application/json
-
+//создать нового админа
 {
     "login": "Diana201",
     "password": "di",
@@ -17,7 +17,7 @@ Accept: application/json
 PUT https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555
 Content-Type: application/json
 Accept: application/json
-
+//изменить данные пользователя
 {
     "name": "DianaSlanova",
     "gender": 0,
@@ -26,13 +26,14 @@ Accept: application/json
 ###
 
 Get https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555
-Content-Type: application/json
-
+Accept: application/json
+//вывести данные пользователя по id
 ###
 
 PUT https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555/password
 Content-Type: application/json
-
+Accept: application/json
+//изменить пароль
 {
   "password": "DianaLALALA"
 }
@@ -40,8 +41,13 @@ Content-Type: application/json
 
 PUT https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555/login
 Content-Type: application/json
-
+Accept: application/json
+//изменить логин
 {
   "login": "DianaNewLogin"
 }
 ###
+
+GET https://localhost:7108/api/User/getAll
+Accept: application/json
+//посмотреть всех активных пользователей

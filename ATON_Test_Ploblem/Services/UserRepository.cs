@@ -5,7 +5,7 @@ namespace ATON_Test_Ploblem.Services
 {
     public class UserRepository
     {
-       private List<User> Users = new List<User>();
+        private List<User> Users = new List<User>();
         public UserRepository()
         {
             var Admin = new User
@@ -50,5 +50,12 @@ namespace ATON_Test_Ploblem.Services
                 Users[indexOfOldUser] = user;
             }
         }
+
+        public List<User> GetAllActive()
+        {
+            var activeUsers = Users.Where(u => u.RevokedOn is null).ToList();
+
+            return activeUsers;
+        }
     }
-}
+} 
