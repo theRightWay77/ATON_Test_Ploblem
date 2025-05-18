@@ -309,12 +309,40 @@ namespace ATON_Test_Ploblem.Controllers
             if (user is null)
                 return NotFound("Пользователь не найден.");
 
+            if (user.RevokedOn is not null)
+                return BadRequest("Пользователь уже удален.");
+
             user.RevokedOn = DateTime.UtcNow;
             user.RevokedBy = currentUser.Login;
+            user.ModifiedOn = DateTime.UtcNow;
+            user.ModifiedBy = currentUser.Login;
 
             _userRepository.Update(user);
 
             return Ok("Пользователь удален.");
+        }
+
+        [HttpPost("{userId:guid}/recover")]
+        public ActionResult Recover(Guid userId)
+        {
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            if (!currentUser.Admin)
+                return Forbid("Действие доступно только алминистраторам.");
+
+            var user = _userRepository.GetById(userId);
+
+            user.RevokedOn = null;
+            user.RevokedBy = null;
+            user.ModifiedOn = DateTime.UtcNow;
+            user.ModifiedBy = currentUser.Login;
+
+            _userRepository.Update(user);
+
+            return Ok("Пользователь восстановлен.");
         }
     }
 }

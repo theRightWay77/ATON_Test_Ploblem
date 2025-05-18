@@ -71,7 +71,12 @@ Accept: application/json
 
 ###
 
-DELETE https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555
+DELETE https://localhost:7108/api/User/bf48ccb4-8300-4582-bc50-ed8fb3fd8e25
 Accept: application/json
 //м€гко удалить пользовател€ 
+###
+
+POST https://localhost:7108/api/User/bf48ccb4-8300-4582-bc50-ed8fb3fd8e25/recover
+Accept: application/json
+//восстановить пользовател€
 ###

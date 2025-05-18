@@ -39,7 +39,7 @@ namespace ATON_Test_Ploblem.Services
 
         public User? GetById(Guid guid)
         {
-            return Users.SingleOrDefault(x => x.Guid == guid && x.RevokedOn is null);
+            return Users.SingleOrDefault(x => x.Guid == guid);
         }
 
         public void Add(User user)
