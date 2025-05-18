@@ -276,5 +276,21 @@ namespace ATON_Test_Ploblem.Controllers
 
             return Ok(resultUser);
         }
+
+        [HttpGet("{age:int}/getByAge")]
+        public ActionResult<List<GetUserDTO>> GetOlderThenAge(int age)
+        {
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            if (!currentUser.Admin)
+                return Forbid("Действие доступно только алминистраторам.");
+
+            var users = MapToGetUserDTO.Map(_userRepository.GetOlderThen(age));
+
+            return users;
+        }
     }
 }

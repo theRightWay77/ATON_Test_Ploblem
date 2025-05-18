@@ -64,5 +64,10 @@ namespace ATON_Test_Ploblem.Services
 
             return activeUsers;
         }
+
+        public List<User> GetOlderThen(int age)
+        {
+            return Users.Where(u => u.Birthday is not null && DateTime.Now.Year - u.Birthday.Value.Year > age).ToList();
+        }
     }
 } 
