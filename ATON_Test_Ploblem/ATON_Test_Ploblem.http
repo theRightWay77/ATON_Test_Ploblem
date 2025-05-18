@@ -58,3 +58,9 @@ Accept: application/json
 //получить пользователя по логину
 
 ###
+
+GET https://localhost:7108/api/User/Admin/password/singIn
+Accept: application/json
+//получить пользователя по логину и паролю
+
+###

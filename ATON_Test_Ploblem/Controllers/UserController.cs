@@ -168,7 +168,7 @@ namespace ATON_Test_Ploblem.Controllers
 
             _userRepository.Update(user);
 
-            var updatedUser = GetById(userId);
+            var updatedUser = MapToGetUserDTO.Map(_userRepository.GetById(userId));
 
             return Ok(updatedUser);
         }
@@ -201,7 +201,7 @@ namespace ATON_Test_Ploblem.Controllers
 
             _userRepository.Update(user);
 
-            var updatedUser = GetById(userId);
+            var updatedUser = MapToGetUserDTO.Map(_userRepository.GetById(userId));
 
             return Ok(updatedUser);
         }
@@ -235,7 +235,7 @@ namespace ATON_Test_Ploblem.Controllers
 
             _userRepository.Update(user);
 
-            var updatedUser = GetById(userId);
+            var updatedUser = MapToGetUserDTO.Map(_userRepository.GetById(userId));
 
             return Ok(updatedUser);
         }
@@ -254,6 +254,27 @@ namespace ATON_Test_Ploblem.Controllers
             var users = MapToGetUserDTO.Map(_userRepository.GetAllActive());
 
             return Ok(users);
+        }
+
+        [HttpGet("{login}/{password}/singIn")]
+        public ActionResult<GetUserDTO> GetUserByLoginAndPassword(string login, string password)
+        {
+            var currentUser = _userRepository.GetByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            if (currentUser.Login != login)
+                return Forbid("У вас нет прав на совершение действия.");
+
+            var user = _userRepository.GetActiveByLogin(login);
+
+            if (user.Password != password)
+                return BadRequest("Введен неверный пароль.");
+
+            var resultUser = MapToGetUserDTO.Map(_userRepository.GetById(currentUser.Guid));
+
+            return Ok(resultUser);
         }
     }
 }
