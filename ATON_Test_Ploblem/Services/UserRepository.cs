@@ -6,6 +6,7 @@ namespace ATON_Test_Ploblem.Services
     public class UserRepository
     {
         private List<User> Users = new List<User>();
+
         public UserRepository()
         {
             var Admin = new User
@@ -26,10 +27,16 @@ namespace ATON_Test_Ploblem.Services
             Add(Admin);
         }
 
-        public User? GetByLogin(string login)
+        public User? GetActiveByLogin(string login)
         {
             return Users.SingleOrDefault(x => x.Login == login && x.RevokedOn is null);
         }
+
+        public User? GetByLogin(string login)
+        {
+            return Users.SingleOrDefault(x => x.Login == login);
+        }
+
         public User? GetById(Guid guid)
         {
             return Users.SingleOrDefault(x => x.Guid == guid && x.RevokedOn is null);
@@ -42,7 +49,7 @@ namespace ATON_Test_Ploblem.Services
 
         public void Update(User user)
         {
-            var oldUser = GetByLogin(user.Login);
+            var oldUser = GetActiveByLogin(user.Login);
 
             if (oldUser is not null)
             {

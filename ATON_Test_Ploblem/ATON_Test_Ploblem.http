@@ -51,3 +51,10 @@ Accept: application/json
 GET https://localhost:7108/api/User/getAll
 Accept: application/json
 //посмотреть всех активных пользователей
+###
+
+GET https://localhost:7108/api/User/Admin/getByLogin
+Accept: application/json
+//получить пользователя по логину
+
+###

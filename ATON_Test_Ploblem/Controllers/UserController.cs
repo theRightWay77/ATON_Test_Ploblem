@@ -23,7 +23,7 @@ namespace ATON_Test_Ploblem.Controllers
         [HttpPost]  
         public ActionResult Create([FromBody] CreateUserDTO userDto)
         {
-            var currentUser = _userRepository.GetByLogin("Admin");
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
 
             if (currentUser is null || currentUser.Admin is false) 
                 return Forbid("Это действие может совершить только админ.");
@@ -34,7 +34,7 @@ namespace ATON_Test_Ploblem.Controllers
             if (!Validation.IsValidLogin(userDto.Login))
                 return BadRequest("Логин должен содержать только латинские буквы и цифры.");
 
-            if (_userRepository.GetByLogin(userDto.Login) is not null)
+            if (_userRepository.GetActiveByLogin(userDto.Login) is not null)
                 return BadRequest("Пользователь с таким логином уже существует.");
 
             if (!Validation.IsValidPassword(userDto.Password))
@@ -105,10 +105,37 @@ namespace ATON_Test_Ploblem.Controllers
             });
         }
 
+        [HttpGet("{login}/getByLogin")]
+        public ActionResult<GetUserDTO> GetByLogin(string login)
+        {
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            if (!currentUser.Admin)
+                return Forbid("Нет прав для совершения операции.");
+
+            var user = _userRepository.GetByLogin(login);
+
+            if (user is null)
+                return NotFound("Пользователь не найден");
+
+            var resultUser = new
+            {
+                Name = user.Name,
+                Gender = user.Gender,
+                Birthday = user.Birthday,
+                IsActive = user.RevokedOn is null
+            };
+
+            return Ok(resultUser);
+        }
+
         [HttpPut("{userId:guid}")]
         public ActionResult<UpdateUserDTO> UpdateUser(Guid userId, [FromBody] UpdateUserDTO userDto)
         {
-            var currentUser = _userRepository.GetByLogin("Admin");
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
 
             if (currentUser is null)
                 return NotFound("Пользователь не найден");
@@ -121,7 +148,10 @@ namespace ATON_Test_Ploblem.Controllers
                     return Forbid("Нет прав для совершения операции.");
             }
 
-            if (user?.RevokedOn != null)
+            if (user is null)
+                return NotFound("Пользователь не найден.");
+
+            if (user.RevokedOn != null)
                 return BadRequest("Вы тыпаетесь изменить данные удаленного пользователя.");
 
             if (!Validation.IsValidName(userDto.Name))
@@ -146,10 +176,10 @@ namespace ATON_Test_Ploblem.Controllers
         [HttpPut("{userId:guid}/password")]
         public ActionResult<GetUserDTO> ChangePassword(Guid userId, ChangePasswordDTO userDto)
         {
-            var currentUser = _userRepository.GetByLogin("Admin");
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
 
             if (currentUser is null)
-                return NotFound("Пользователь не найден");
+                return NotFound("Пользователь не найден.");
 
             var user = _userRepository.GetById(userId);
 
@@ -179,7 +209,7 @@ namespace ATON_Test_Ploblem.Controllers
         [HttpPut("{userId:guid}/login")]
         public ActionResult<GetUserDTO> ChangeLogin(Guid userId, ChangeLoginDTO userDto)
         {
-            var currentUser = _userRepository.GetByLogin("Admin");
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
 
             if (currentUser is null)
                 return NotFound("Пользователь не найден");
@@ -198,7 +228,7 @@ namespace ATON_Test_Ploblem.Controllers
             if (!Validation.IsValidLogin(userDto.Login))
                 return BadRequest("Логин должен содержать только латинские буквы и цифры.");
 
-            if (_userRepository.GetByLogin(userDto.Login) is not null)
+            if (_userRepository.GetActiveByLogin(userDto.Login) is not null)
                 return BadRequest("Пользователь с таким логином уже существует.");
 
             user.Login = userDto.Login;
@@ -213,7 +243,7 @@ namespace ATON_Test_Ploblem.Controllers
         [HttpGet("getAll")]
         public ActionResult<List<GetUserDTO>> GetAll()
         {
-            var currentUser = _userRepository.GetByLogin("Admin");
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
 
             if (currentUser is null)
                 return NotFound("Пользователь не найден");
