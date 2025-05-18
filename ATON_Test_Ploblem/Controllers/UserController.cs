@@ -171,7 +171,43 @@ namespace ATON_Test_Ploblem.Controllers
 
             _userRepository.Update(user);
 
-            return Ok(GetById(user.Guid));
-        } 
+            var updatedUser = GetById(userId);
+
+            return Ok(updatedUser);
+        }
+
+        [HttpPut("{userId:guid}/login")]
+        public ActionResult<GetUserDTO> ChangeLogin(Guid userId, ChangeLoginDTO userDto)
+        {
+            var currentUser = _userRepository.GetByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            var user = _userRepository.GetById(userId);
+
+            if (!currentUser.Admin)
+            {
+                if (currentUser.Guid != userId)
+                    return Forbid("Нет прав для совершения операции.");
+            }
+
+            if (user?.RevokedOn != null)
+                return BadRequest("Вы тыпаетесь изменить данные удаленного пользователя.");
+
+            if (!Validation.IsValidLogin(userDto.Login))
+                return BadRequest("Логин должен содержать только латинские буквы и цифры.");
+
+            if (_userRepository.GetByLogin(userDto.Login) is not null)
+                return BadRequest("Пользователь с таким логином уже существует.");
+
+            user.Login = userDto.Login;
+
+            _userRepository.Update(user);
+
+            var updatedUser = GetById(userId);
+
+            return Ok(updatedUser);
+        }
     }
 }
