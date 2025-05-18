@@ -70,3 +70,8 @@ Accept: application/json
 //получить пользователей старше, чем ..
 
 ###
+
+DELETE https://localhost:7108/api/User/11111111-2222-3333-4444-555555555555
+Accept: application/json
+//мягко удалить пользователя 
+###

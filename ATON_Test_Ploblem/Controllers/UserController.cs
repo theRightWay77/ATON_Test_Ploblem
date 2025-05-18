@@ -292,5 +292,29 @@ namespace ATON_Test_Ploblem.Controllers
 
             return users;
         }
+
+        [HttpDelete("{userId:guid}")]
+        public ActionResult Revoke(Guid userId)
+        {
+            var currentUser = _userRepository.GetActiveByLogin("Admin");
+
+            if (currentUser is null)
+                return NotFound("Пользователь не найден");
+
+            if (!currentUser.Admin)
+                return Forbid("Действие доступно только алминистраторам.");
+
+            var user = _userRepository.GetById(userId);
+
+            if (user is null)
+                return NotFound("Пользователь не найден.");
+
+            user.RevokedOn = DateTime.UtcNow;
+            user.RevokedBy = currentUser.Login;
+
+            _userRepository.Update(user);
+
+            return Ok("Пользователь удален.");
+        }
     }
 }
